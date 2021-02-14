@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mainColor">
+
+
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/cameraAnim"
+        android:layout_width="170dp"
+        android:layout_height="170dp"
+        android:layout_centerHorizontal="true"
+        fbutton:lottie_rawRes="@raw/camera"
+        fbutton:lottie_autoPlay="true"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/cameraAnim"
+        >
+
+        <com.incite.moviequiz.FButton
+            android:id="@+id/b1"
+            style="@style/menuButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginHorizontal="35dp"
+            android:layout_marginVertical="10dp"
+            android:fontFamily="@font/rounds"
+            android:text="@string/classicMenuText"
+            android:textSize="18sp"
+            fbutton:cornerRadius="15dp"
+            fbutton:fButtonColor="@color/yellowColor"
+            fbutton:shadowColor="@color/orangeColor"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="7dp"
+            android:onClick="startArcadeActivity"/>
+        <com.incite.moviequiz.FButton
+            android:id="@+id/b2"
+            android:layout_below="@id/b1"
+            style="@style/menuButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginHorizontal="35dp"
+            android:layout_marginVertical="10dp"
+            android:fontFamily="@font/rounds"
+            android:text="@string/guessMenuText"
+            android:textSize="18sp"
+            fbutton:cornerRadius="15dp"
+            fbutton:fButtonColor="@color/yellowColor"
+            fbutton:shadowColor="@color/orangeColor"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="7dp"
+            android:onClick="startGuessActivity"/>
+        <com.incite.moviequiz.FButton
+            android:id="@+id/b3"
+            android:layout_below="@id/b2"
+            style="@style/menuButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginHorizontal="35dp"
+            android:layout_marginVertical="10dp"
+            android:fontFamily="@font/rounds"
+            android:text="@string/trueFalseMenuText"
+            android:textSize="18sp"
+            fbutton:cornerRadius="15dp"
+            fbutton:fButtonColor="@color/yellowColor"
+            fbutton:shadowColor="@color/orangeColor"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="7dp"
+            android:onClick="startTrueFalseActivity"/>
+        <com.incite.moviequiz.FButton
+            android:id="@+id/b4"
+            android:layout_below="@id/b3"
+            style="@style/menuButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginHorizontal="35dp"
+            android:layout_marginVertical="10dp"
+            android:fontFamily="@font/rounds"
+            android:text="@string/shop"
+            android:textSize="18sp"
+            fbutton:cornerRadius="15dp"
+            fbutton:fButtonColor="@color/yellowColor"
+            fbutton:shadowColor="@color/orangeColor"
+            fbutton:shadowEnabled="true"
+
+            fbutton:shadowHeight="7dp"
+            android:onClick="goToShop"/>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

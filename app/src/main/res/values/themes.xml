@@ -1,0 +1,55 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="MovieQuiz" parent="Theme.AppCompat.Light.NoActionBar">
+
+        <item name="fontFamily">@font/rounds</item>
+        <item name="android:fontFamily">@font/rounds</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowFullscreen">false</item>
+
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/mainColor</item>
+
+        <item name="colorPrimaryVariant">@color/mainColor</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="roundImageView" parent="">
+
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">30dp</item>
+
+    </style>
+
+    <style name="divider" parent="">
+
+        <item name="cornerFamily">rounded</item>
+        <item name="color">@color/greenColor</item>
+        <item name="background">@color/greenColor</item>
+        <item name="cornerSize">10dp</item>
+
+    </style>
+
+    <style name="MyAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!-- Used for the buttons -->
+        <item name="colorAccent">#FFC107</item>
+        <!-- Used for the title and text -->
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <!-- Used for the background -->
+        <item name="android:background">#4CAF50</item>
+    </style>
+
+
+</resources>

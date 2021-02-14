@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+
+
+    <style name="menuButtonStyle" parent="android:Widget.Button">
+        <item name="android:layout_marginHorizontal">35dp</item>
+        <item name="android:layout_marginVertical">10dp</item>
+        <item name="cornerRadius">15dp</item>
+        <item name="shadowEnabled">true</item>
+        <item name="shadowHeight">7dp</item>
+       <!-- <item name="fontFamily">@font/rounds</item>-->
+    </style>
+
+    <style name="hintButtonStyle" parent="android:Widget.Button">
+        <item name="android:layout_marginHorizontal">30dp</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_width">70dp</item>
+        <item name="android:layout_height">70dp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="cornerRadius">32dp</item>
+        <item name="shadowEnabled">true</item>
+        <item name="shadowHeight">6dp</item>
+        <item name="fontFamily">@font/rounds</item>
+    </style>
+</resources>

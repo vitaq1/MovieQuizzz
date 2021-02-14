@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rlag"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:background="#6c5ce7">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/fireworks_animation"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_below="@id/ivt"
+        android:layout_centerHorizontal="true"
+        app:lottie_autoPlay="false"
+        app:lottie_rawRes="@raw/fireworks" />
+
+    <RelativeLayout
+        android:id="@+id/overInfo"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@drawable/ic_moneylabel">
+
+        <TextView
+            android:id="@+id/allFilmsTv3"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginHorizontal="20dp"
+            android:gravity="center"
+            android:textColor="@color/orange"
+            android:textSize="20sp" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/soundOnOff3"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_toStartOf="@id/money_view3"
+            android:layout_toEndOf="@id/allFilmsTv3"
+            android:onClick="checkSound"
+            app:lottie_rawRes="@raw/soundonoff"
+
+            />
+
+        <RelativeLayout
+            android:id="@+id/money_view3"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginHorizontal="30dp"
+            android:background="@drawable/ic_rrect"
+            android:onClick="startShopActivity">
+
+            <TextView
+                android:id="@+id/moneyTv3"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:gravity="center"
+                android:textColor="@color/greenColor"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginHorizontal="5dp"
+                android:src="@drawable/ic_coin" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivt"
+        android:layout_width="350dp"
+        android:layout_height="205dp"
+        android:layout_below="@id/overInfo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:transitionName="cardViewTransition"
+        app:shapeAppearanceOverlay="@style/roundImageView" />
+
+    <RelativeLayout
+        android:id="@+id/rll"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_below="@id/ivt"
+        android:layout_marginTop="20dp">
+
+        <Button
+            android:layout_width="40dp"
+            android:layout_height="60dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginHorizontal="10dp"
+            android:background="@drawable/ic_prev"
+            android:onClick="prevFilm" />
+
+        <Button
+            android:layout_width="40dp"
+            android:layout_height="60dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginHorizontal="10dp"
+            android:background="@drawable/ic_next"
+            android:onClick="nextFilm" />
+
+        <ImageView
+            android:id="@+id/passButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@id/oneButton"
+            android:onClick="passLevel"
+            android:src="@drawable/ic_passbutton" />
+
+        <ImageView
+            android:id="@+id/oneButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:layout_marginHorizontal="40dp"
+            android:onClick="showFirstLetter"
+            android:src="@drawable/ic_onebutton" />
+
+        <ImageView
+            android:id="@+id/deleteButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/oneButton"
+            android:onClick="removeOtherLetters"
+            android:src="@drawable/ic_deletebutton" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/rll"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/lettersLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/l1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/l2"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal"></LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/l3"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal"></LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/l4"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal"></LinearLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/keybordLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/l11"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal"></LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/l22"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_below="@id/l11"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/l33"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_below="@id/l22"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/l44"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_below="@id/l33"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

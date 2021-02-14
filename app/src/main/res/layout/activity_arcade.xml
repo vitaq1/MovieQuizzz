@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:background="@color/bgColor">
+
+    <RelativeLayout
+        android:id="@+id/overInfo"
+        android:background="@drawable/ic_moneylabel"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        >
+        <TextView
+            android:id="@+id/allFilmsTv1"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:textSize="20sp"
+            android:textColor="@color/orange"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginHorizontal="20dp"/>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:onClick="checkSound"
+            android:id="@+id/soundOnOff1"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            app:lottie_rawRes="@raw/soundonoff"
+            android:layout_toEndOf="@id/allFilmsTv1"
+            android:layout_toStartOf="@id/money_view1"
+
+            />
+
+        <RelativeLayout
+            android:id="@+id/money_view1"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_rrect"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginHorizontal="30dp"
+            android:onClick="startShopActivity">
+            <TextView
+                android:id="@+id/moneyTv1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textColor="@color/greenColor"
+                android:textSize="18sp"
+                android:layout_marginStart="10dp"/>
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/ic_coin"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginHorizontal="5dp"/>
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/mainScrollView"
+        android:layout_below="@id/overInfo"
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/mainLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        </LinearLayout>
+    </ScrollView>
+
+
+
+</RelativeLayout>

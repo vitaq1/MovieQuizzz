@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bgColor">
+
+    <RelativeLayout
+        android:id="@+id/overInfo"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@drawable/ic_moneylabel">
+
+        <RelativeLayout
+            android:id="@+id/allFilmsTv1"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginHorizontal="20dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/curScore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Результат: "
+                android:textColor="@color/greenColor" />
+
+            <TextView
+                android:id="@+id/recScore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/curScore"
+                android:text="Рекорд: "
+                android:textColor="@color/redColor" />
+
+
+
+        </RelativeLayout>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/soundOnOff4"
+            android:onClick="checkSound"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            app:lottie_rawRes="@raw/soundonoff"
+            android:layout_toEndOf="@id/allFilmsTv1"
+            android:layout_toStartOf="@id/money_view4"
+
+            />
+
+        <RelativeLayout
+            android:id="@+id/money_view4"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginHorizontal="30dp"
+            android:background="@drawable/ic_rrect"
+            android:onClick="startShopActivity">
+
+            <TextView
+                android:id="@+id/moneyTv4"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:gravity="center"
+                android:textColor="@color/greenColor"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginHorizontal="5dp"
+                android:src="@drawable/ic_coin" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/gvt"
+        android:layout_width="350dp"
+        android:layout_height="205dp"
+        android:layout_below="@id/overInfo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:src="@drawable/question"
+        android:transitionName="cardViewTransition"
+        app:shapeAppearanceOverlay="@style/roundImageView" />
+
+    <com.incite.moviequiz.FButton
+        android:onClick="startPlay"
+        android:id="@+id/playButton"
+        android:layout_width="350dp"
+        android:layout_height="205dp"
+        android:layout_below="@id/overInfo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:fontFamily="@font/rounds"
+        android:text="Нажмите, чтобы начать"
+        android:textColor="@color/darkRedColor"
+        android:textSize="35sp"
+        fbutton:cornerRadius="20dp"
+        fbutton:fButtonColor="@color/yellowColor"
+        fbutton:shadowColor="@color/orangeColor"
+        fbutton:shadowEnabled="true"
+        fbutton:shadowHeight="7dp" />
+
+    <RelativeLayout
+        android:id="@+id/rl1"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@id/gvt">
+
+        <com.incite.moviequiz.FButton
+            android:id="@+id/fiftyfifty"
+            android:onClick="getFiftyFifty"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_centerVertical="true"
+            android:layout_marginHorizontal="30dp"
+            android:layout_toStartOf="@id/clockAnim"
+            android:fontFamily="@font/rounds"
+            android:text="@string/fifty"
+            android:textSize="18sp"
+            fbutton:cornerRadius="32dp"
+            fbutton:fButtonColor="@color/greenS"
+            fbutton:shadowColor="@color/darkGreenS"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="6dp" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/clockAnim"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true"
+            fbutton:lottie_autoPlay="true"
+            fbutton:lottie_rawRes="@raw/clock" />
+
+        <com.incite.moviequiz.FButton
+            android:id="@+id/pass"
+            android:onClick="skipFilm"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_centerVertical="true"
+            android:layout_marginHorizontal="30dp"
+            android:layout_toEndOf="@id/clockAnim"
+            android:fontFamily="@font/rounds"
+            android:text="@string/skip"
+            android:textSize="18sp"
+            fbutton:cornerRadius="32dp"
+            fbutton:fButtonColor="@color/pinkColor"
+            fbutton:shadowColor="@color/redColor"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="6dp" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/timeTv"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_below="@id/rl1"
+        android:text="0 сек"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+
+
+    <com.incite.moviequiz.FButton
+        android:onClick="checkAnswer"
+        android:id="@+id/ansButton1"
+        android:layout_below="@id/timeTv"
+        android:layout_width="140dp"
+        android:layout_height="70dp"
+
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="45dp"
+        android:layout_marginBottom="25dp"
+        android:fontFamily="@font/rounds"
+        android:text="?"
+        android:textSize="18sp"
+        fbutton:cornerRadius="20dp"
+        fbutton:fButtonColor="@color/yellowColor"
+        fbutton:shadowColor="@color/orangeColor"
+        fbutton:shadowEnabled="true"
+        fbutton:shadowHeight="7dp" />
+
+    <com.incite.moviequiz.FButton
+        android:onClick="checkAnswer"
+        android:id="@+id/ansButton2"
+        android:layout_below="@id/timeTv"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="25dp"
+        android:layout_width="140dp"
+        android:layout_height="70dp"
+        android:layout_gravity="end"
+        android:layout_marginEnd="45dp"
+        android:fontFamily="@font/rounds"
+        android:text="?"
+        android:textSize="18sp"
+        fbutton:cornerRadius="20dp"
+        fbutton:fButtonColor="@color/yellowColor"
+        fbutton:shadowColor="@color/orangeColor"
+        fbutton:shadowEnabled="true"
+        fbutton:shadowHeight="7dp" />
+
+    <com.incite.moviequiz.FButton
+        android:onClick="checkAnswer"
+        android:id="@+id/ansButton3"
+        android:layout_below="@id/ansButton1"
+        android:layout_width="140dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="45dp"
+        android:layout_marginBottom="25dp"
+        android:fontFamily="@font/rounds"
+        android:text="?"
+        android:textSize="18sp"
+        fbutton:cornerRadius="20dp"
+        fbutton:fButtonColor="@color/yellowColor"
+        fbutton:shadowColor="@color/orangeColor"
+        fbutton:shadowEnabled="true"
+        fbutton:shadowHeight="7dp" />
+
+    <com.incite.moviequiz.FButton
+        android:onClick="checkAnswer"
+        android:id="@+id/ansButton4"
+        android:layout_below="@id/ansButton2"
+        android:layout_alignParentEnd="true"
+
+        android:layout_marginBottom="25dp"
+        android:layout_width="140dp"
+        android:layout_height="70dp"
+        android:layout_gravity="end"
+        android:layout_marginEnd="45dp"
+        android:fontFamily="@font/rounds"
+        android:text="?"
+        android:textSize="18sp"
+        fbutton:cornerRadius="20dp"
+        fbutton:fButtonColor="@color/yellowColor"
+        fbutton:shadowColor="@color/orangeColor"
+        fbutton:shadowEnabled="true"
+        fbutton:shadowHeight="7dp" />
+
+
+</RelativeLayout>
