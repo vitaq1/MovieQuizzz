@@ -1,7 +1,6 @@
-package com.incite.moviequiz.data;
+package com.incite.moviequiz.domain.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class FilmPack {
 

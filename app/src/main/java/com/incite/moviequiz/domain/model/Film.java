@@ -1,4 +1,4 @@
-package com.incite.moviequiz.data;
+package com.incite.moviequiz.domain.model;
 
 import android.graphics.drawable.Drawable;
 

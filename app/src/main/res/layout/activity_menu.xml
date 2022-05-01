@@ -19,10 +19,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/cameraAnim"
-        >
+        android:layout_below="@id/cameraAnim">
 
-        <com.incite.moviequiz.FButton
+        <com.incite.moviequiz.presentation.custom_view.FButton
             android:id="@+id/b1"
             style="@style/menuButtonStyle"
             android:layout_width="match_parent"
@@ -36,14 +35,14 @@
             fbutton:fButtonColor="@color/yellowColor"
             fbutton:shadowColor="@color/orangeColor"
             fbutton:shadowEnabled="true"
-            fbutton:shadowHeight="7dp"
-            android:onClick="startArcadeActivity"/>
-        <com.incite.moviequiz.FButton
+            fbutton:shadowHeight="7dp" />
+
+        <com.incite.moviequiz.presentation.custom_view.FButton
             android:id="@+id/b2"
-            android:layout_below="@id/b1"
             style="@style/menuButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="80dp"
+            android:layout_below="@id/b1"
             android:layout_marginHorizontal="35dp"
             android:layout_marginVertical="10dp"
             android:fontFamily="@font/rounds"
@@ -53,14 +52,14 @@
             fbutton:fButtonColor="@color/yellowColor"
             fbutton:shadowColor="@color/orangeColor"
             fbutton:shadowEnabled="true"
-            fbutton:shadowHeight="7dp"
-            android:onClick="startGuessActivity"/>
-        <com.incite.moviequiz.FButton
+            fbutton:shadowHeight="7dp" />
+
+        <com.incite.moviequiz.presentation.custom_view.FButton
             android:id="@+id/b3"
-            android:layout_below="@id/b2"
             style="@style/menuButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="80dp"
+            android:layout_below="@id/b2"
             android:layout_marginHorizontal="35dp"
             android:layout_marginVertical="10dp"
             android:fontFamily="@font/rounds"
@@ -70,14 +69,14 @@
             fbutton:fButtonColor="@color/yellowColor"
             fbutton:shadowColor="@color/orangeColor"
             fbutton:shadowEnabled="true"
-            fbutton:shadowHeight="7dp"
-            android:onClick="startTrueFalseActivity"/>
-        <com.incite.moviequiz.FButton
+            fbutton:shadowHeight="7dp" />
+
+        <com.incite.moviequiz.presentation.custom_view.FButton
             android:id="@+id/b4"
-            android:layout_below="@id/b3"
             style="@style/menuButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="80dp"
+            android:layout_below="@id/b3"
             android:layout_marginHorizontal="35dp"
             android:layout_marginVertical="10dp"
             android:fontFamily="@font/rounds"
@@ -86,10 +85,9 @@
             fbutton:cornerRadius="15dp"
             fbutton:fButtonColor="@color/yellowColor"
             fbutton:shadowColor="@color/orangeColor"
-            fbutton:shadowEnabled="true"
 
-            fbutton:shadowHeight="7dp"
-            android:onClick="goToShop"/>
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="7dp" />
 
     </RelativeLayout>
 

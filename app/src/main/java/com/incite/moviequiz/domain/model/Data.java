@@ -1,4 +1,4 @@
-package com.incite.moviequiz.data;
+package com.incite.moviequiz.domain.model;
 
 import android.content.Context;
 
@@ -48,12 +48,6 @@ public class Data {
     public static void loadPacks(Context context) {
         loadFilms(context);
         System.out.println("LOADED");
-        /*p1.addFilms(films.get(0),
-                films.get(1),
-                films.get(2),
-                films.get(3),
-                films.get(4));
-        packs.add(p1);*/
 
         p1.addFilms(
                 films.get(1 - 1),
@@ -794,7 +788,6 @@ public class Data {
 
     private static void loadFilms(Context context) {
         films = new ArrayList<>();
-        System.out.println("123");
         films.add(new Film(context.getString(R.string.s1), R.drawable.f1));
         films.add(new Film(context.getString(R.string.s2), R.drawable.f2));
         films.add(new Film(context.getString(R.string.s3), R.drawable.f3));

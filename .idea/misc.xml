@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/MovieQuiz/app/src/main/res/layout/activity_arcade.xml" value="0.12135416666666667" />
+        <entry key="..\:/MovieQuiz/app/src/main/res/layout/activity_arcadefilmsview.xml" value="0.12135416666666667" />
+        <entry key="..\:/MovieQuiz/app/src/main/res/layout/activity_arcadegame.xml" value="0.12135416666666667" />
+        <entry key="..\:/MovieQuiz/app/src/main/res/layout/activity_menu.xml" value="0.12135416666666667" />
+        <entry key="..\:/MovieQuiz/app/src/main/res/layout/activity_truefalse.xml" value="0.11510416666666666" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
