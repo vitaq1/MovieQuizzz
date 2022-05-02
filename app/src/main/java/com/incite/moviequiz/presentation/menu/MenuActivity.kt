@@ -9,16 +9,27 @@ import androidx.core.content.ContextCompat
 import android.content.Intent
 
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.incite.moviequiz.*
-import com.incite.moviequiz.domain.model.Data
+import com.incite.moviequiz.data.local.MovieDao
+import com.incite.moviequiz.domain.model.DataLoader
+
 import com.incite.moviequiz.presentation.arcade.ArcadeActivity
 import com.incite.moviequiz.presentation.custom_view.FButton
 import com.incite.moviequiz.presentation.guess.GuessActivity
 import com.incite.moviequiz.presentation.shop.ShopActivity
 import com.incite.moviequiz.presentation.truefalse.TrueFalseActivity
 import com.incite.moviequiz.util.SoundManager
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MenuActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var dataLoader: DataLoader
+
     private lateinit var b1: FButton
     private lateinit var b2: FButton
     private lateinit var b3: FButton
@@ -43,18 +54,19 @@ class MenuActivity : AppCompatActivity() {
 
     }
 
-    private fun initSoundManager(){
+    private fun initSoundManager() {
         if (!SoundManager.isLoaded) {
             SoundManager.init(applicationContext)
             SoundManager.isLoaded = true
         }
     }
 
-    private fun loadPacks(){
-        if (!Data.isLoaded) Data.loadPacks(
-            applicationContext
-        )
-        Data.isLoaded = true
+    private fun loadPacks() {
+
+        lifecycleScope.launch {
+            if (!dataLoader.isLoaded) dataLoader.loadData(applicationContext)
+        }
+
     }
 
     private fun initViews() {

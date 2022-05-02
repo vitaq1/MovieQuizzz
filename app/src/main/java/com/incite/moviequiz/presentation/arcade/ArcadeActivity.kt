@@ -9,7 +9,6 @@ import android.os.Bundle
 import com.incite.moviequiz.R
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import com.incite.moviequiz.domain.model.Player
 import android.view.ViewGroup
 import android.view.Gravity
 import android.content.Intent
@@ -19,11 +18,20 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.incite.moviequiz.presentation.arcade_films.ArcadeFilmsViewActivity
 import com.google.android.material.snackbar.Snackbar
-import com.incite.moviequiz.domain.model.Data
+import com.incite.moviequiz.domain.model.DataLoader
+import com.incite.moviequiz.domain.model.Player
 import com.incite.moviequiz.presentation.menu.MenuActivity
 import com.incite.moviequiz.presentation.shop.ShopActivity
+import com.incite.moviequiz.util.SoundManager
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-class ArcadeActivity : AppCompatActivity() {
+@AndroidEntryPoint
+class ArcadeActivity  : AppCompatActivity() {
+
+    @Inject
+    lateinit var dataLoader: DataLoader
+    private var player: Player? = null
 
     private lateinit var sound: LottieAnimationView
     private lateinit var linearLayout: LinearLayout
@@ -41,38 +49,38 @@ class ArcadeActivity : AppCompatActivity() {
         val size = Point()
         display.getSize(size)
 
-        levelsOffsetOpen = (0.65 * (Data.overallFilms / Data.getPacks().size)).toInt()
+        levelsOffsetOpen = (0.65 * (dataLoader.films.size / dataLoader.packs.size)).toInt()
 
 
         initViews()
         setViews()
 
-        /*if(!SoundManager.isOn) sound.setFrame(60);
-        else sound.setFrame(90);*/
+        if(!SoundManager.isOn) sound.setFrame(60);
+        else sound.setFrame(90);
 
-        //TODO fix kotlin
-
+        player = dataLoader.repo.getPlayer()
 
         /** SET PASSLEVEL TV  */
         var passed = 0
         var all = 0
-        for (i in Data.getPacks().indices) {
-            for (j in 0 until Data.getPacks()[i].size()) {
-                if (Data.getPacks()[i].films[j].isPassed) {
+        for (i in dataLoader.packs.indices) {
+            for (j in 0 until dataLoader.packs[i].films.size) {
+                if (dataLoader.packs[i].films[j].completed) {
                     passed++
                 }
                 all++
             }
         }
         val str = "$passed / $all"
-        levelTv.setText(str)
-        moneyTv.setText(Player.money.toString())
+        levelTv.text = str
+        //todo
+        moneyTv.text = player?.money.toString()
         //
 
 
         /*  end - init */
 
-        for (i in Data.getPacks().indices) {
+        for (i in dataLoader.packs.indices) {
             val rl = RelativeLayout(this)
             val lp = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -102,8 +110,8 @@ class ArcadeActivity : AppCompatActivity() {
             /** SET PASSLEVEL TV  */
             var p = 0
             var a = 0
-            for (j in 0 until Data.getPacks()[i].size()) {
-                if (Data.getPacks()[i].films[j].isPassed) {
+            for (j in 0 until dataLoader.packs[i].films.size) {
+                if (dataLoader.packs[i].films[j].completed) {
                     p++
                 }
                 a++
@@ -155,7 +163,7 @@ class ArcadeActivity : AppCompatActivity() {
                 if (rl.contentDescription.toString().toInt() <= 0) {
                     val i = Intent(this, ArcadeFilmsViewActivity::class.java)
                     i.putExtra("packId", view.id)
-                    Player.currentPackId = view.id
+                    //Player.currentPackId = view.id
                     play(Click1)
                     startActivity(i)
                 } else {
@@ -205,8 +213,7 @@ class ArcadeActivity : AppCompatActivity() {
     }
 
     fun checkSound(view: View?) {
-        //todo kotlin
-        /*if (SoundManager.isOn) {
+        if (SoundManager.isOn) {
             SoundManager.play(SoundManager.Bubble);
             SoundManager.isOn = false;
             SoundManager.stop(SoundManager.Tick);
@@ -215,7 +222,7 @@ class ArcadeActivity : AppCompatActivity() {
             SoundManager.isOn = true;
             SoundManager.play(SoundManager.Bubble);
             sound.setSpeed(1.5f);
-        }*/
+        }
         sound.playAnimation()
     }
 

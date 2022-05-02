@@ -9,27 +9,36 @@ import com.google.android.material.imageview.ShapeableImageView
 import android.os.Bundle
 import com.incite.moviequiz.R
 import android.content.Intent
-import com.incite.moviequiz.domain.model.Player
 import android.widget.ScrollView
 import com.bumptech.glide.Glide
 import com.google.android.material.shape.CornerFamily
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Point
+import android.net.Uri
 import android.transition.Fade
 import android.view.View
 import android.widget.GridLayout
 import androidx.appcompat.app.AppCompatActivity
-import com.incite.moviequiz.ArcadeGameActivity
+import com.incite.moviequiz.presentation.arcade_game.ArcadeGameActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.ViewCompat
-import com.incite.moviequiz.domain.model.Data
+import com.incite.moviequiz.domain.model.DataLoader
+import com.incite.moviequiz.domain.model.Player
 import com.incite.moviequiz.presentation.arcade.ArcadeActivity
 import com.incite.moviequiz.presentation.shop.ShopActivity
+import com.incite.moviequiz.util.SoundManager
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.ArrayList
+import javax.inject.Inject
 
+@AndroidEntryPoint
 //770 X 450 IMG
 class ArcadeFilmsViewActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var dataLoader: DataLoader
+    private var player: Player? = null
 
     private lateinit var sound: LottieAnimationView
     private lateinit var levelTv: TextView
@@ -41,43 +50,31 @@ class ArcadeFilmsViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_arcadefilmsview)
 
-        val fade = Fade()
-        //val decor = window.decorView
-
-        fade.excludeTarget(android.R.id.statusBarBackground, true)
-        fade.excludeTarget(android.R.id.navigationBarBackground, true)
-        fade.excludeTarget(R.id.rlfv, true)
-        fade.excludeTarget(R.id.rlag, true)
-
-        window.enterTransition = fade
-        window.exitTransition = fade
-
+        setAnimations()
         initViews()
         setViews()
 
+        player = dataLoader.repo.getPlayer()
 
-        if (!isOn) sound.setFrame(60) else sound.setFrame(90)
-
+        if (!isOn) sound.frame = 60 else sound.frame = 90
 
         id = intent.getIntExtra("packId", 0)
-        Player.isLastMain = true
-        Player.currentPackId = id
 
         /** SET PASSLEVEL TV  */
 
 
         var passed = 0
         var all = 0
-        for (j in 0 until Data.getPacks()[id].size()) {
-            if (Data.getPacks()[id].films[j].isPassed) {
+        for (j in 0 until dataLoader.packs[id].films.size) {
+            if (dataLoader.packs[id].films[j].completed) {
                 passed++
             }
             all++
         }
         val str = "$passed / $all"
         levelTv.text = str
-        moneyTv.text = Player.money.toString()
-        //
+        moneyTv.text = player?.money.toString()
+
         val display = windowManager.defaultDisplay
         val size = Point()
         display.getSize(size)
@@ -88,8 +85,8 @@ class ArcadeFilmsViewActivity : AppCompatActivity() {
         val pixelsMarginTop = (0.05 * size.x).toInt()
         val imageWidth = (0.4 * size.x).toInt()
         val imageHeight = (0.234 * size.x).toInt()
-        for (j in 0 until Data.getPacks()[id].size()) {
-            val currentFilm = Data.getPacks()[id].films[j]
+        for (j in 0 until dataLoader.packs[id].films.size) {
+            val currentFilm = dataLoader.packs[id].films[j]
             val imageViewLp = GridLayout.LayoutParams()
             imageViewLp.rowSpec = GridLayout.spec(0, 1f)
             imageViewLp.width = imageWidth
@@ -97,11 +94,11 @@ class ArcadeFilmsViewActivity : AppCompatActivity() {
             val imageView = ShapeableImageView(this)
             imageView.transitionName = "cardViewTransition"
             imageView.id = j
-            imageView.contentDescription = currentFilm.answer
+            imageView.contentDescription = currentFilm.name
             imageViewLp.setMargins(pixelsMarginSides, pixelsMarginTop - 12, pixelsMarginSides, 0)
             imageView.layoutParams = imageViewLp
 
-            Glide.with(applicationContext).load(currentFilm.drawableID).into(imageView)
+            Glide.with(applicationContext).load(Uri.parse(currentFilm.image)).into(imageView)
             imageView.shapeAppearanceModel = imageView.shapeAppearanceModel
                 .toBuilder()
                 .setAllCorners(
@@ -109,7 +106,7 @@ class ArcadeFilmsViewActivity : AppCompatActivity() {
                     resources.getDimension(R.dimen.default_corner_radius)
                 )
                 .build()
-            if (Data.getPacks()[id].films[j].isPassed) {
+            if (dataLoader.packs[id].films[j].completed) {
                 val matrix = ColorMatrix()
                 matrix.setSaturation(0f)
                 val filter = ColorMatrixColorFilter(matrix)
@@ -118,8 +115,9 @@ class ArcadeFilmsViewActivity : AppCompatActivity() {
             imageView.setOnClickListener { view ->
                 val i = Intent(this@ArcadeFilmsViewActivity, ArcadeGameActivity::class.java)
                 i.putExtra("filmId", view.id)
-                i.putExtra("packId", Player.currentPackId)
-                Player.currentFilmId = view.id
+                i.putExtra("packId", id)
+                i.putExtra("isLastMain", true)
+                i.putExtra("isLastPrev", false)
                 val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                     this@ArcadeFilmsViewActivity,
                     imageView,
@@ -128,12 +126,21 @@ class ArcadeFilmsViewActivity : AppCompatActivity() {
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 play(Click1)
                 startActivity(i, options.toBundle())
-                //supportFinishAfterTransition();
             }
             gridLayout.addView(imageView)
             images.add(imageView)
         }
         scrollView.addView(gridLayout)
+    }
+
+    private fun setAnimations(){
+        val fade = Fade()
+        fade.excludeTarget(android.R.id.statusBarBackground, true)
+        fade.excludeTarget(android.R.id.navigationBarBackground, true)
+        fade.excludeTarget(R.id.rlfv, true)
+        fade.excludeTarget(R.id.rlag, true)
+        window.enterTransition = fade
+        window.exitTransition = fade
     }
 
     private fun initViews(){
@@ -159,9 +166,8 @@ class ArcadeFilmsViewActivity : AppCompatActivity() {
 
     override fun onRestart() {
         super.onRestart()
-        Player.isLastMain = true
         for (i in images.indices) {
-            if (Data.getPacks()[id].films[i].isPassed) {
+            if (dataLoader.packs[id].films[i].completed) {
                 val matrix = ColorMatrix()
                 matrix.setSaturation(0f)
                 val filter = ColorMatrixColorFilter(matrix)
@@ -170,16 +176,15 @@ class ArcadeFilmsViewActivity : AppCompatActivity() {
         }
         var passed = 0
         var all = 0
-        for (j in 0 until Data.getPacks()[id].size()) {
-            if (Data.getPacks()[id].films[j].isPassed) {
+        for (j in 0 until dataLoader.packs[id].films.size) {
+            if (dataLoader.packs[id].films[j].completed) {
                 passed++
             }
             all++
         }
         val str = "$passed / $all"
         levelTv.text = str
-        moneyTv.text = Player.money.toString()
-        //
+        moneyTv.text = player?.money.toString()
     }
 
     fun startShopActivity(view: View?) {
@@ -189,16 +194,16 @@ class ArcadeFilmsViewActivity : AppCompatActivity() {
     }
 
     fun checkSound(view: View?) {
-        /*if (SoundManager.isOn) {
+        if (SoundManager.isOn) {
             SoundManager.play(SoundManager.Bubble);
             SoundManager.isOn = false;
             SoundManager.stop(SoundManager.Tick);
-            sound.setSpeed(-1.5f);
+            sound.speed = -1.5f
         } else {
             SoundManager.isOn = true;
             SoundManager.play(SoundManager.Bubble);
-            sound.setSpeed(1.5f);
-        }*/
+            sound.speed = 1.5f
+        }
         sound.playAnimation()
     }
 

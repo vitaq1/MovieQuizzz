@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Point
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -20,14 +21,21 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
-import com.incite.moviequiz.domain.model.Player
 import com.incite.moviequiz.R
-import com.incite.moviequiz.domain.model.Data
+import com.incite.moviequiz.domain.model.DataLoader
 import com.incite.moviequiz.domain.model.Film
+import com.incite.moviequiz.domain.model.Player
 import com.incite.moviequiz.presentation.custom_view.FButton
 import com.incite.moviequiz.presentation.shop.ShopActivity
+import com.incite.moviequiz.util.SoundManager
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class TrueFalseActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var dataLoader: DataLoader
 
     private lateinit var sound: LottieAnimationView
     private lateinit var relativeLayout: RelativeLayout
@@ -56,6 +64,8 @@ class TrueFalseActivity : AppCompatActivity() {
     private var nowSwitching = false
     private var correctAnswer = false
 
+    private var player: Player? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_truefalse)
@@ -63,13 +73,13 @@ class TrueFalseActivity : AppCompatActivity() {
         initViews()
         setViews()
 
-        //if(!SoundManager.isOn) sound.setFrame(60);
-        //else sound.setFrame(90);
-
+        if(!SoundManager.isOn) sound.frame = 60
+        else sound.frame = 90
+        player = dataLoader.repo.getPlayer()
         play()
     }
 
-    private fun initViews(){
+    private fun initViews() {
         sound = findViewById(R.id.soundOnOff5)
         relativeLayout = findViewById(R.id.generalView)
         face = ResourcesCompat.getFont(this, R.font.rounds)!!
@@ -91,7 +101,7 @@ class TrueFalseActivity : AppCompatActivity() {
         falseImg = ContextCompat.getDrawable(this, R.drawable.ic_resource_false)!!
     }
 
-    private fun setViews(){
+    private fun setViews() {
         sound.setMinFrame(60)
         trueButton.typeface = face
         falseButton.typeface = face
@@ -128,11 +138,7 @@ class TrueFalseActivity : AppCompatActivity() {
         falseButton.setFButtonPadding(30, 0, 0, 0)
         trueButton.setCompoundDrawables(trueImg, null, null, null)
         falseButton.setCompoundDrawables(falseImg, null, null, null)
-        val s1 = "Результат: $score"
-        val s2 = "Рекорд: " + Player.guessRecord.toString()
-        scoreTv.text = s1
-        recordTv.text = s2
-        moneyTv.text = Player.money.toString()
+
 
     }
 
@@ -149,25 +155,27 @@ class TrueFalseActivity : AppCompatActivity() {
     }
 
     private fun nextFilm() {
-        if (gameMemory!!.size < Data.overallFilms) {
+
+        if (gameMemory!!.size < dataLoader.films.size) {
             nowSwitching = false
             refreshScores()
             currentFilm = randomFilm
-            while (gameMemory!!.contains(currentFilm.answer)) {
-                println(1)
+
+            while (gameMemory!!.contains(currentFilm.name)) {
                 currentFilm = randomFilm
             }
-            gameMemory!!.add(currentFilm.answer)
-            Glide.with(applicationContext).load(currentFilm.drawableID).into(imageView)
+
+            gameMemory!!.add(currentFilm.name)
+            Glide.with(applicationContext).load(Uri.parse(currentFilm.image)).into(imageView)
 
             //case ans is true
             if (rnd(1, 10) % 3 == 0) {
-                answer = currentFilm.answer
+                answer = currentFilm.name
                 correctAnswer = true
             } else {
                 var fakeFilm = randomFilm
-                while (fakeFilm.answer == currentFilm.answer) fakeFilm = randomFilm
-                answer = fakeFilm.answer
+                while (fakeFilm.name == currentFilm.name) fakeFilm = randomFilm
+                answer = fakeFilm.name
                 correctAnswer = false
             }
             val s = "Фильм называется \"$answer\"?"
@@ -177,9 +185,9 @@ class TrueFalseActivity : AppCompatActivity() {
 
     private val randomFilm: Film
         get() {
-            val randomPackId = rnd(0, Data.getPacks().size - 1)
-            val randomFilmId = rnd(0, Data.getPacks()[randomPackId].films.size - 1)
-            return Data.getPacks()[randomPackId].films[randomFilmId]
+            val randomPackId = rnd(0, dataLoader.packs.size - 1)
+            val randomFilmId = rnd(0, dataLoader.packs[randomPackId].films.size - 1)
+            return dataLoader.packs[randomPackId].films[randomFilmId]
         }
 
     fun checkAnswer(view: View) {
@@ -188,24 +196,28 @@ class TrueFalseActivity : AppCompatActivity() {
             handler = Handler()
             if (view.id == R.id.trueButton && correctAnswer) {
                 score++
-                //SoundManager.play(SoundManager.Correct1);
+                SoundManager.play(SoundManager.Correct1)
                 trueAnim.animate()
+                player!!.money++
+                dataLoader.repo.updatePlayer(player!!)
             }
             if (view.id == R.id.trueButton && !correctAnswer) {
                 minusHP()
                 hp--
-                //SoundManager.play(SoundManager.Error);
+                SoundManager.play(SoundManager.Error)
                 falseAnim.animate()
             }
             if (view.id == R.id.falseButton && !correctAnswer) {
                 score++
-                //SoundManager.play(SoundManager.Correct1);
+                SoundManager.play(SoundManager.Correct1)
                 trueAnim.animate()
+                player!!.money++
+                dataLoader.repo.updatePlayer(player!!)
             }
             if (view.id == R.id.falseButton && correctAnswer) {
                 minusHP()
                 hp--
-                //SoundManager.play(SoundManager.Error);
+                SoundManager.play(SoundManager.Error)
                 falseAnim.animate()
             }
             if (hp == 0) {
@@ -236,10 +248,14 @@ class TrueFalseActivity : AppCompatActivity() {
 
     private fun refreshScores() {
         val s1 = "Результат: $score"
-        if (score > Player.guessRecord) Player.guessRecord = score
-        val s2 = "Рекорд: " + Player.guessRecord.toString()
+        if (score > player!!.tf_record){
+            player?.tf_record = score
+            dataLoader.repo.updatePlayer(player!!)
+        }
+        val s2 = "Рекорд: " + player?.tf_record.toString()
         scoreTv.text = s1
         recordTv.text = s2
+        moneyTv.text = player?.money.toString()
     }
 
     private fun showAlertDialog(context: Context?) {
@@ -265,16 +281,16 @@ class TrueFalseActivity : AppCompatActivity() {
     }
 
     fun checkSound(view: View?) {
-        /*if (SoundManager.isOn) {
+        if (SoundManager.isOn) {
             SoundManager.play(SoundManager.Bubble);
             SoundManager.isOn = false;
             SoundManager.stop(SoundManager.Tick);
-            sound.setSpeed(-1.5f);
+            sound.speed = -1.5f
         } else {
             SoundManager.isOn = true;
             SoundManager.play(SoundManager.Bubble);
-            sound.setSpeed(1.5f);
-        }*/
+            sound.speed = 1.5f
+        }
         sound.playAnimation()
     }
 

@@ -1,4 +1,4 @@
-package com.incite.moviequiz
+package com.incite.moviequiz.presentation.arcade_game
 
 import android.animation.Animator
 import com.incite.moviequiz.util.SoundManager.isOn
@@ -9,10 +9,8 @@ import com.airbnb.lottie.LottieAnimationView
 import android.graphics.Typeface
 import android.annotation.SuppressLint
 import android.os.Bundle
-import com.incite.moviequiz.presentation.arcade_game.OnSwipeTouchListener
 import androidx.core.content.res.ResourcesCompat
 import android.content.Intent
-import com.incite.moviequiz.domain.model.Player
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import android.graphics.drawable.Drawable
@@ -22,19 +20,32 @@ import android.animation.ValueAnimator
 import android.animation.ObjectAnimator
 import android.animation.AnimatorListenerAdapter
 import android.graphics.Point
+import android.net.Uri
 import android.os.Handler
 import android.transition.Fade
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.request.transition.Transition
-import com.incite.moviequiz.domain.model.Data
+import com.incite.moviequiz.R
+import com.incite.moviequiz.domain.model.DataLoader
+import com.incite.moviequiz.domain.model.Film
+import com.incite.moviequiz.domain.model.Player
 import com.incite.moviequiz.presentation.arcade_films.ArcadeFilmsViewActivity
 import com.incite.moviequiz.presentation.shop.ShopActivity
+import com.incite.moviequiz.util.SoundManager
+import dagger.hilt.android.AndroidEntryPoint
 import java.lang.StringBuilder
 import java.util.ArrayList
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ArcadeGameActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var dataLoader: DataLoader
+    private var player: Player? = null
+    private var film: Film? = null
 
     private val ANIM_DURATION = 200
     private var OFFSET = -1000f
@@ -58,13 +69,47 @@ class ArcadeGameActivity : AppCompatActivity() {
     private lateinit var oneLetterButton: ImageView
     private lateinit var deleteLettersButton: ImageView
     private lateinit var fireworksAnim: LottieAnimationView
-    private var alphabet = charArrayOf('а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я')
+    private var alphabet = charArrayOf(
+        'а',
+        'б',
+        'в',
+        'г',
+        'д',
+        'е',
+        'ж',
+        'з',
+        'и',
+        'й',
+        'к',
+        'л',
+        'м',
+        'н',
+        'о',
+        'п',
+        'р',
+        'с',
+        'т',
+        'у',
+        'ф',
+        'х',
+        'ц',
+        'ш',
+        'щ',
+        'ъ',
+        'ы',
+        'ь',
+        'э',
+        'ю',
+        'я'
+    )
     var guessButtons = ArrayList<Button>()
     var keyboardButtons = ArrayList<Button>()
     var previewedChars = ArrayList<String>()
     private var answerPtr = 0
     var filmId = 0
     var packId = 0
+    var isLastMain = false
+    var isLastPrev = false
     private var answer: String = ""
     var k = 0 // for counting opened letters by hint
 
@@ -76,33 +121,38 @@ class ArcadeGameActivity : AppCompatActivity() {
         setAnimations()
         initViews()
         setViews()
+        player = dataLoader.repo.getPlayer()
 
         previewedChars.addAll(arrayOf(" ", "!", "«", "»", "-", "'", "№", ".", "\"", "+", ":"))
-
         if (!isOn) sound.frame = 60 else sound.frame = 90
 
-
-        val intent = intent
         filmId = intent.getIntExtra("filmId", 0)
         packId = intent.getIntExtra("packId", 0)
+        film = dataLoader.repo.getFilmById(packId * 20 + filmId)
+        isLastMain = intent.getBooleanExtra("isLastMain", false)
+        isLastPrev = intent.getBooleanExtra("isLastPrev", false)
 
-        Player.currentFilmId = filmId
-        answer = Data.getPacks()[packId].films[filmId].answer
+        println("filmId: " + filmId)
+        println("packId: " + packId)
+        println("film: " + film)
+
+
+        answer = dataLoader.packs[packId].films[filmId].name
 
         /** SET PASSLEVEL TV  */
         var passed = 0
         var all = 0
-        for (j in 0 until Data.getPacks()[packId].size()) {
-            if (Data.getPacks()[packId].films[j].isPassed) {
+        for (j in 0 until dataLoader.packs[packId].films.size) {
+            if (dataLoader.packs[packId].films[j].completed) {
                 passed++
             }
             all++
         }
-        val str = (Player.currentFilmId + 1).toString() + " / " + all
+        val str = (filmId + 1).toString() + " / " + all
         levelTv.text = str
-        moneyTv.text = Player.money.toString()
+        moneyTv.text = player?.money.toString()
         Glide.with(applicationContext)
-            .load(Data.getPacks()[Player.currentPackId].films[Player.currentFilmId].drawableID)
+            .load(Uri.parse(dataLoader.packs[packId].films[filmId].image))
             .override(dpToPixels(350), dpToPixels(205)).fitCenter().into(ivt)
         val display = windowManager.defaultDisplay
         val size = Point()
@@ -376,8 +426,6 @@ class ArcadeGameActivity : AppCompatActivity() {
                 keyboardNum++
                 l11.addView(b)
             }
-            println(keyboardButtons.size)
-            println(keyboardNum)
         }
         if (answer.length in 10..18) {
             for (i in 0..8) {
@@ -530,7 +578,6 @@ class ArcadeGameActivity : AppCompatActivity() {
             guessButtons[i].contentDescription = answer.get(i).toString()
         }
         for (i in guessButtons.indices) {
-            println("11")
             if (guessButtons[i].contentDescription == " ") {
                 guessButtons[i].text = " "
                 guessButtons[i].visibility = View.INVISIBLE
@@ -574,8 +621,6 @@ class ArcadeGameActivity : AppCompatActivity() {
         var rand: Int
 
         //заполнение букв с ответа
-        println(keyboardButtons.size)
-        println(keyboardNum)
         for (i in 0 until answer.length) {
             var kb: Button
             do {
@@ -609,7 +654,7 @@ class ArcadeGameActivity : AppCompatActivity() {
 
         /* adding keyboard letters */
         /** CHECK IF LEVEL ALREADY PASSED */
-        if (Data.getPacks()[packId].films[filmId].isPassed) {
+        if (dataLoader.packs[packId].films[filmId].completed) {
             for (i in guessButtons.indices) {
                 guessButtons[i].text = guessButtons[i].contentDescription
             }
@@ -626,8 +671,10 @@ class ArcadeGameActivity : AppCompatActivity() {
             }
             setEditable(false)
         }
-        if (!Player.isLastMain) {
-            if (Player.isLastPrev) {
+
+
+        if (!isLastMain) {
+            if (isLastPrev) {
                 ivt.x = -OFFSET
                 lettersLayout.x = -OFFSET
                 keyboardLayout.x = -OFFSET
@@ -651,7 +698,7 @@ class ArcadeGameActivity : AppCompatActivity() {
     }
 
 
-    private fun setAnimations(){
+    private fun setAnimations() {
         val fade = Fade()
         fade.excludeTarget(android.R.id.statusBarBackground, true)
         fade.excludeTarget(android.R.id.navigationBarBackground, true)
@@ -661,7 +708,7 @@ class ArcadeGameActivity : AppCompatActivity() {
         window.exitTransition = fade
     }
 
-    private fun initViews(){
+    private fun initViews() {
 
         fireworksAnim = findViewById(R.id.fireworks_animation)
         sound = findViewById(R.id.soundOnOff3)
@@ -685,7 +732,7 @@ class ArcadeGameActivity : AppCompatActivity() {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun setViews(){
+    private fun setViews() {
         sound.setMinFrame(60)
 
         lettersLayout.setOnTouchListener(object : OnSwipeTouchListener(this) {
@@ -710,9 +757,8 @@ class ArcadeGameActivity : AppCompatActivity() {
                 while (answerPtr < guessButtons.size && guessButtons[answerPtr].text !== "") {
                     answerPtr++
                 }
-                if (isPassed) {
-                    passLevel(null)
-                }
+
+                isPassed
             }
         }
     }
@@ -758,26 +804,29 @@ class ArcadeGameActivity : AppCompatActivity() {
         swipeAnim.start()
         lettersLayoutAnim.start()
         keyboardLayoutAnim.start()
+
         swipeAnim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
-                if (Player.currentFilmId + 1 < Data.getPacks()[packId].size()) {
+
+                if (filmId + 1 < dataLoader.packs[packId].films.size) {
                     val i = Intent(this@ArcadeGameActivity, ArcadeGameActivity::class.java)
-                    i.putExtra("filmId", Player.currentFilmId + 1)
-                    i.putExtra("packId", Player.currentPackId)
+                    i.putExtra("filmId", filmId + 1)
+                    i.putExtra("packId", packId)
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    Player.isLastMain = false
-                    Player.isLastPrev = true
+                    i.putExtra("isLastMain", false)
+                    i.putExtra("isLastPrev", true)
                     startActivity(i)
                     overridePendingTransition(0, 0)
                     finish()
                 } else {
                     val i = Intent(this@ArcadeGameActivity, ArcadeFilmsViewActivity::class.java)
-                    Player.isLastMain = true
-                    Player.isLastPrev = false
-                    i.putExtra("packId", Player.currentPackId)
+                    i.putExtra("isLastMain", true)
+                    i.putExtra("isLastPrev", false)
+                    i.putExtra("packId", packId)
                     startActivity(i)
                     finish()
                 }
+
             }
         })
     }
@@ -796,20 +845,16 @@ class ArcadeGameActivity : AppCompatActivity() {
         keyboardLayoutAnim.start()
         swipeAnim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
-                if (Player.currentFilmId - 1 >= 0) {
+                if (filmId - 1 >= 0) {
                     val i = Intent(this@ArcadeGameActivity, ArcadeGameActivity::class.java)
-                    i.putExtra("filmId", Player.currentFilmId - 1)
-                    i.putExtra("packId", Player.currentPackId)
+                    i.putExtra("filmId", filmId - 1)
+                    i.putExtra("packId", packId)
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    Player.isLastMain = false
-                    Player.isLastPrev = false
                     startActivity(i)
                     overridePendingTransition(0, 0)
                     finish()
                 } else {
                     val i = Intent(this@ArcadeGameActivity, ArcadeFilmsViewActivity::class.java)
-                    Player.isLastMain = false
-                    Player.isLastPrev = false
                     startActivity(i)
                     finish()
                 }
@@ -818,56 +863,65 @@ class ArcadeGameActivity : AppCompatActivity() {
     }
 
     fun passLevel(view: View?) {
-        play(Correct1)
-        if (!Data.getPacks()[Player.currentPackId].films[filmId].isPassed) {
-            for (i in guessButtons.indices) {
-                guessButtons[i].text = guessButtons[i].contentDescription
-            }
-            k = 0
-            for (j in guessButtons.indices) {
-                for (i in keyboardButtons.indices) {
-                    if (keyboardButtons[i].text.toString() == guessButtons[k].text.toString()) {
-                        keyboardButtons[i].text = ""
-                        keyboardButtons[i].visibility = View.INVISIBLE
-                        break
-                    }
+        //if (player!!.money >= 0) {
+            if (!dataLoader.packs[packId].films[filmId].completed) {
+                for (i in guessButtons.indices) {
+                    guessButtons[i].text = guessButtons[i].contentDescription
                 }
-                k++
+                k = 0
+                for (j in guessButtons.indices) {
+                    for (i in keyboardButtons.indices) {
+                        if (keyboardButtons[i].text.toString() == guessButtons[k].text.toString()) {
+                            keyboardButtons[i].text = ""
+                            keyboardButtons[i].visibility = View.INVISIBLE
+                            break
+                        }
+                    }
+                    k++
+                }
+
             }
-            Player.setLevelPassed()
-            Player.addMoney(10)
-            fireworksAnim.playAnimation()
-            fireworksAnim.setMaxFrame(40)
-            fireworksAnim.speed = 2f
-            Handler().postDelayed({ if (isPassed) nextFilm(null) }, 1000) //2600 def
+            player!!.money -= 80
+            moneyTv.text = player!!.money.toString()
+            isPassed
         }
-    }
+    //}
 
     fun showFirstLetter(view: View?) {
-        play(Click1)
-        if (k > guessButtons.size - 1) k = 0
-        while (previewedChars.contains(guessButtons[k].text) && k < guessButtons.size) {
-            k++
-        }
-        guessButtons[k].text = guessButtons[k].contentDescription
-        guessButtons[k].isClickable = false
-        for (i in keyboardButtons.indices) {
-            if (keyboardButtons[i].text.toString() == guessButtons[k].text.toString()) {
-                keyboardButtons[i].text = ""
-                keyboardButtons[i].visibility = View.INVISIBLE
-                break
+        //if (player!!.money >= 0) {
+            play(Click1)
+            if (k > guessButtons.size - 1) k = 0
+            while (previewedChars.contains(guessButtons[k].text) && k < guessButtons.size) {
+                k++
             }
+            guessButtons[k].text = guessButtons[k].contentDescription
+            guessButtons[k].isClickable = false
+            for (i in keyboardButtons.indices) {
+                if (keyboardButtons[i].text.toString() == guessButtons[k].text.toString()) {
+                    keyboardButtons[i].text = ""
+                    keyboardButtons[i].visibility = View.INVISIBLE
+                    break
+                }
+            }
+            k++
+            answerPtr = k
+            player!!.money -= 10
+            moneyTv.text = player!!.money.toString()
+
+            isPassed
         }
-        k++
-        if (isPassed) passLevel(null)
-    }
+    //}
 
     fun removeOtherLetters(view: View?) {
-        for (j in keyboardButtons.indices) {
-            if (keyboardButtons[j].alpha == 0.999f) {
-                keyboardButtons[j].text = ""
-                keyboardButtons[j].visibility = View.INVISIBLE
+        if (player!!.money >= 20) {
+            for (j in keyboardButtons.indices) {
+                if (keyboardButtons[j].alpha == 0.999f) {
+                    keyboardButtons[j].text = ""
+                    keyboardButtons[j].visibility = View.INVISIBLE
+                }
             }
+            player!!.money -= 20
+            moneyTv.text = player!!.money.toString()
         }
     }
 
@@ -877,7 +931,20 @@ class ArcadeGameActivity : AppCompatActivity() {
             for (i in guessButtons.indices) {
                 current.append(guessButtons[i].text)
             }
-            return current.toString() == answer
+            if (current.toString() == answer) {
+                player!!.money += 30
+                moneyTv.text = player!!.money.toString()
+                dataLoader.packs[packId].films[filmId].completed = true
+                film?.completed = true
+                dataLoader.repo.updateFilm(film!!)
+                dataLoader.repo.updatePlayer(player!!)
+                fireworksAnim.playAnimation()
+                fireworksAnim.setMaxFrame(40)
+                fireworksAnim.speed = 2f
+                play(Correct1)
+                Handler().postDelayed({ nextFilm(null) }, 1000) //2600 def
+                return true
+            } else return false
         }
 
     private fun setEditable(isEditable: Boolean) {
@@ -901,7 +968,7 @@ class ArcadeGameActivity : AppCompatActivity() {
     }
 
     fun checkSound(view: View?) {
-        /*if (SoundManager.isOn) {
+        if (SoundManager.isOn) {
             SoundManager.play(SoundManager.Bubble);
             SoundManager.isOn = false;
             SoundManager.stop(SoundManager.Tick);
@@ -910,7 +977,7 @@ class ArcadeGameActivity : AppCompatActivity() {
             SoundManager.isOn = true;
             SoundManager.play(SoundManager.Bubble);
             sound.setSpeed(1.5f);
-        }*/
+        }
         sound.playAnimation()
     }
 }

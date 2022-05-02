@@ -10,7 +10,6 @@ import android.os.CountDownTimer
 import android.os.Bundle
 import com.incite.moviequiz.R
 import androidx.core.content.res.ResourcesCompat
-import com.incite.moviequiz.domain.model.Player
 import com.bumptech.glide.Glide
 import android.annotation.SuppressLint
 import android.content.Context
@@ -18,17 +17,28 @@ import androidx.core.content.ContextCompat
 import android.view.MotionEvent
 import android.content.Intent
 import android.graphics.Rect
+import android.net.Uri
 import android.os.Handler
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.incite.moviequiz.domain.model.Data
+import com.airbnb.lottie.LottieDrawable
+import com.incite.moviequiz.domain.model.DataLoader
+import com.incite.moviequiz.domain.model.Player
 import com.incite.moviequiz.presentation.custom_view.FButton
 import com.incite.moviequiz.presentation.shop.ShopActivity
+import com.incite.moviequiz.util.SoundManager
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.ArrayList
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class GuessActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var dataLoader: DataLoader
+
     private lateinit var sound: LottieAnimationView
     private lateinit var currentFilm: Film
     private lateinit var handler: Handler
@@ -47,20 +57,23 @@ class GuessActivity : AppCompatActivity() {
     private lateinit var clockAnim: LottieAnimationView
     private lateinit var face: Typeface
     private lateinit var answer: String
-    private lateinit var cTimer: CountDownTimer
+    private var cTimer: CountDownTimer? = null
     private var score = 0
     private var leftTime: Long = 0
+    private var player: Player? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_guess)
 
-        /* if (!isOn) sound.setFrame(60) else sound.setFrame(90)
-         if (!isOn) sound.setFrame(66)*/
-
         initViews()
         setViews()
 
+        if (!SoundManager.isOn) sound.frame = 60
+        else sound.frame = 90
+
+        player = dataLoader.repo.getPlayer()
+        refreshScores()
     }
 
     private fun initViews() {
@@ -97,12 +110,6 @@ class GuessActivity : AppCompatActivity() {
         b4.setOnClickListener(null)
         fifty.setOnClickListener(null)
         pass.setOnClickListener(null)
-        val s1 = "Результат: $score"
-        val s2 = "Рекорд: " + Player.guessRecord.toString()
-        currentScore.text = s1
-        recordScore.text = s2
-        money.text = Player.money.toString()
-
 
     }
 
@@ -111,6 +118,7 @@ class GuessActivity : AppCompatActivity() {
         gameMemory = ArrayList()
         playButton.visibility = View.INVISIBLE
         clockAnim.playAnimation()
+        clockAnim.loop(true)
         nextFilm()
         startTimer(20000)
         setButtonsClickListeners()
@@ -124,87 +132,87 @@ class GuessActivity : AppCompatActivity() {
         setAnswerButtonsState(b2, 2)
         setAnswerButtonsState(b3, 2)
         setAnswerButtonsState(b4, 2)
-        println(Data.overallFilms)
-        if (gameMemory!!.size < Data.overallFilms) {
+        if (gameMemory!!.size < dataLoader.films.size) {
             refreshScores()
             val answers = ArrayList<String>()
             currentFilm = randomFilm
-            while (gameMemory!!.contains(currentFilm.answer)) {
-                println(1)
+            while (gameMemory!!.contains(currentFilm.name)) {
                 currentFilm = randomFilm
             }
-            answer = currentFilm.answer
-            gameMemory!!.add(currentFilm.answer)
-            println(currentFilm.answer)
+            answer = currentFilm.name
+            gameMemory!!.add(currentFilm.name)
+            println(currentFilm.name)
             isPlaying = true
 
-            Glide.with(applicationContext).load(currentFilm.drawableID).into(imageView)
+            Glide.with(applicationContext).load(Uri.parse(currentFilm.image)).into(imageView)
             val numOfCorrectAnswer = rnd(1, 4)
-            answers.add(currentFilm.answer)
+            answers.add(currentFilm.name)
             var s1 = ""
             var s2 = ""
             var s3 = ""
             var s4 = ""
-            s1 = randomFilm.answer
-            s2 = randomFilm.answer
-            s3 = randomFilm.answer
-            s4 = randomFilm.answer
+            s1 = randomFilm.name
+            s2 = randomFilm.name
+            s3 = randomFilm.name
+            s4 = randomFilm.name
             while (answers.contains(s1) || answers.contains(s2) || answers.contains(s3) || answers.contains(
                     s4
                 )
                 || s1 == s2 || s1 == s3 || s1 == s4 || s2 == s3 || s2 == s4 || s3 == s4
             ) {
                 println(2)
-                s1 = randomFilm.answer
-                s2 = randomFilm.answer
-                s3 = randomFilm.answer
-                s4 = randomFilm.answer
+                s1 = randomFilm.name
+                s2 = randomFilm.name
+                s3 = randomFilm.name
+                s4 = randomFilm.name
             }
             b1.text = s1
             b2.text = s2
             b3.text = s3
             b4.text = s4
-            if (numOfCorrectAnswer == 1) b1.text = currentFilm.answer
-            if (numOfCorrectAnswer == 2) b2.text = currentFilm.answer
-            if (numOfCorrectAnswer == 3) b3.text = currentFilm.answer
-            if (numOfCorrectAnswer == 4) b4.text = currentFilm.answer
+            if (numOfCorrectAnswer == 1) b1.text = currentFilm.name
+            if (numOfCorrectAnswer == 2) b2.text = currentFilm.name
+            if (numOfCorrectAnswer == 3) b3.text = currentFilm.name
+            if (numOfCorrectAnswer == 4) b4.text = currentFilm.name
         }
     }
 
     private val randomFilm: Film
         get() {
-            val randomPackId = rnd(0, Data.getPacks().size - 1)
-            val randomFilmId = rnd(0, Data.getPacks()[randomPackId].films.size - 1)
-            return Data.getPacks()[randomPackId].films[randomFilmId]
+            val randomPackId = rnd(0, dataLoader.packs.size - 1)
+            val randomFilmId = rnd(0, dataLoader.packs[randomPackId].films.size - 1)
+            return dataLoader.packs[randomPackId].films[randomFilmId]
         }
 
     fun checkAnswer(view: View) {
         handler = Handler()
         val currentButton = findViewById<FButton>(view.id)
-        if (currentButton.text === currentFilm.answer) {
+        if (currentButton.text === currentFilm.name) {
             setAnswerButtonsState(currentButton, 1)
             score++
-            //SoundManager.play(SoundManager.Correct1);
+            player!!.money++
+            dataLoader.repo.updatePlayer(player!!)
+            SoundManager.play(SoundManager.Correct1);
             cancelTimer()
             startTimer(leftTime + 1000)
             handler.postDelayed({ nextFilm() }, 500)
         } else {
             setAnswerButtonsState(currentButton, 0)
-            //SoundManager.play(SoundManager.Error);
+            SoundManager.play(SoundManager.Error);
             if (leftTime > 2000) {
                 cancelTimer()
                 startTimer(leftTime - 2000)
             }
-            if (b1.text === currentFilm.answer) {
+            if (b1.text === currentFilm.name) {
                 setAnswerButtonsState(b1, 1)
             }
-            if (b2.text === currentFilm.answer) {
+            if (b2.text === currentFilm.name) {
                 setAnswerButtonsState(b2, 1)
             }
-            if (b3.text === currentFilm.answer) {
+            if (b3.text === currentFilm.name) {
                 setAnswerButtonsState(b3, 1)
             }
-            if (b4.text === currentFilm.answer) {
+            if (b4.text === currentFilm.name) {
                 setAnswerButtonsState(b4, 1)
             }
             handler.postDelayed({ nextFilm() }, 500)
@@ -311,16 +319,20 @@ class GuessActivity : AppCompatActivity() {
 
     private fun refreshScores() {
         val s1 = "Результат: $score"
-        if (score > Player.guessRecord) Player.guessRecord = score
-        val s2 = "Рекорд: " + Player.guessRecord.toString()
+        if (score > player!!.guess_record) {
+            player?.guess_record = score
+            dataLoader.repo.updatePlayer(player!!)
+        }
+        val s2 = "Рекорд: " + player?.guess_record.toString()
         currentScore.text = s1
         recordScore.text = s2
+        money.text = player?.money.toString()
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
         cancelTimer()
-        //SoundManager.stop(SoundManager.Tick);
+        SoundManager.stop(SoundManager.Tick);
         finish()
     }
 
@@ -358,17 +370,16 @@ class GuessActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                println("lose")
-                //SoundManager.stop(SoundManager.Tick);
+                SoundManager.stop(SoundManager.Tick);
                 isPlaying = false
                 showAlertDialog(applicationContext)
             }
         }
-        cTimer.start()
+        cTimer!!.start()
     }
 
     private fun cancelTimer() {
-        if (cTimer != null) cTimer.cancel()
+        if (cTimer != null) cTimer!!.cancel()
     }
 
     /** */
@@ -379,19 +390,19 @@ class GuessActivity : AppCompatActivity() {
         builder.setCancelable(false)
         builder.setPositiveButton("Попробовать еще раз") { dialog, id ->
             startPlay(null)
-            //SoundManager.play(SoundManager.Click1);
+            SoundManager.play(SoundManager.Click1);
             dialog.cancel()
         }
         builder.setNegativeButton("Выйти") { dialog, id ->
             finish()
-            //SoundManager.play(SoundManager.Click1);
+            SoundManager.play(SoundManager.Click1);
             dialog.cancel()
         }
         builder.show()
     }
 
     var answerButtonsClickListener =
-        View.OnClickListener { view -> //SoundManager.play(SoundManager.Click1);
+        View.OnClickListener { view -> SoundManager.play(SoundManager.Click1);
             checkAnswer(view)
         }
 
@@ -400,31 +411,33 @@ class GuessActivity : AppCompatActivity() {
         b2.setOnClickListener(answerButtonsClickListener)
         b3.setOnClickListener(answerButtonsClickListener)
         b4.setOnClickListener(answerButtonsClickListener)
-        fifty.setOnClickListener { view -> //SoundManager.play(SoundManager.Click1);
+        fifty.setOnClickListener { view -> SoundManager.play(SoundManager.Click1);
             getFiftyFifty(view)
         }
-        pass.setOnClickListener { view -> //SoundManager.play(SoundManager.Click1);
+        pass.setOnClickListener { view -> SoundManager.play(SoundManager.Click1);
             skipFilm(view)
         }
     }
 
     fun startShopActivity(view: View?) {
+        cancelTimer()
+        SoundManager.stop(SoundManager.Tick)
         val i = Intent(this@GuessActivity, ShopActivity::class.java)
         startActivity(i)
         finish()
     }
 
     fun checkSound(view: View?) {
-        /*if (SoundManager.isOn) {
+        if (SoundManager.isOn) {
             SoundManager.play(SoundManager.Bubble);
             SoundManager.isOn = false;
             SoundManager.stop(SoundManager.Tick);
-            sound.setSpeed(-1.5f);
+            sound.speed = -1.5f
         } else {
             SoundManager.isOn = true;
             SoundManager.play(SoundManager.Bubble);
-            sound.setSpeed(1.5f);
-        }*/
+            sound.speed = 1.5f
+        }
         sound.playAnimation()
     }
 
