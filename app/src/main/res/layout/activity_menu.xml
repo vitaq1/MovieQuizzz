@@ -6,15 +6,14 @@
     android:background="@color/mainColor">
 
 
-
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/cameraAnim"
         android:layout_width="170dp"
         android:layout_height="170dp"
         android:layout_centerHorizontal="true"
-        fbutton:lottie_rawRes="@raw/camera"
         fbutton:lottie_autoPlay="true"
-        />
+        fbutton:lottie_loop="true"
+        fbutton:lottie_rawRes="@raw/camera" />
 
     <RelativeLayout
         android:layout_width="match_parent"

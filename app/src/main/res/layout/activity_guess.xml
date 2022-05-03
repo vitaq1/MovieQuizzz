@@ -95,7 +95,7 @@
         android:transitionName="cardViewTransition"
         app:shapeAppearanceOverlay="@style/roundImageView" />
 
-    <com.incite.moviequiz.FButton
+    <com.incite.moviequiz.presentation.custom_view.FButton
         android:onClick="startPlay"
         android:id="@+id/playButton"
         android:layout_width="350dp"
@@ -119,7 +119,7 @@
         android:layout_height="100dp"
         android:layout_below="@id/gvt">
 
-        <com.incite.moviequiz.FButton
+        <com.incite.moviequiz.presentation.custom_view.FButton
             android:id="@+id/fiftyfifty"
             android:onClick="getFiftyFifty"
             android:layout_width="70dp"
@@ -144,7 +144,7 @@
             fbutton:lottie_autoPlay="true"
             fbutton:lottie_rawRes="@raw/clock" />
 
-        <com.incite.moviequiz.FButton
+        <com.incite.moviequiz.presentation.custom_view.FButton
             android:id="@+id/pass"
             android:onClick="skipFilm"
             android:layout_width="70dp"
@@ -174,7 +174,7 @@
         android:textSize="18sp" />
 
 
-    <com.incite.moviequiz.FButton
+    <com.incite.moviequiz.presentation.custom_view.FButton
         android:onClick="checkAnswer"
         android:id="@+id/ansButton1"
         android:layout_below="@id/timeTv"
@@ -193,7 +193,7 @@
         fbutton:shadowEnabled="true"
         fbutton:shadowHeight="7dp" />
 
-    <com.incite.moviequiz.FButton
+    <com.incite.moviequiz.presentation.custom_view.FButton
         android:onClick="checkAnswer"
         android:id="@+id/ansButton2"
         android:layout_below="@id/timeTv"
@@ -213,7 +213,7 @@
         fbutton:shadowEnabled="true"
         fbutton:shadowHeight="7dp" />
 
-    <com.incite.moviequiz.FButton
+    <com.incite.moviequiz.presentation.custom_view.FButton
         android:onClick="checkAnswer"
         android:id="@+id/ansButton3"
         android:layout_below="@id/ansButton1"
@@ -230,7 +230,7 @@
         fbutton:shadowEnabled="true"
         fbutton:shadowHeight="7dp" />
 
-    <com.incite.moviequiz.FButton
+    <com.incite.moviequiz.presentation.custom_view.FButton
         android:onClick="checkAnswer"
         android:id="@+id/ansButton4"
         android:layout_below="@id/ansButton2"

@@ -34,22 +34,22 @@ class ShopActivity : AppCompatActivity() {
 
     }
 
-    private fun initViews(){
+    private fun initViews() {
         sound = findViewById(R.id.soundOnOff6)
         face = ResourcesCompat.getFont(this, R.font.rounds)!!
         money = findViewById(R.id.moneyTv6)
     }
 
-    private fun setViews(){
+    private fun setViews() {
         sound.setMinFrame(60)
-        if(!SoundManager.isOn) sound.frame = 60
+        if (!SoundManager.isOn) sound.frame = 60
         else sound.frame = 90
 
         money.text = player?.money.toString()
     }
 
     fun checkSound(view: View?) {
-         if (SoundManager.isOn) {
+        if (SoundManager.isOn) {
             SoundManager.play(SoundManager.Bubble);
             SoundManager.isOn = false;
             SoundManager.stop(SoundManager.Tick);
@@ -60,5 +60,12 @@ class ShopActivity : AppCompatActivity() {
             sound.setSpeed(1.5f);
         }
         sound.playAnimation()
+    }
+
+    fun addMoney(view: View) {
+
+        player!!.money += 50
+        money.text = player?.money.toString()
+        dataLoader.repo.updatePlayer(player!!)
     }
 }
