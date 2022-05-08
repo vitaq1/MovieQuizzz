@@ -80,8 +80,6 @@
     </RelativeLayout>
 
 
-
-
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/gvt2"
         android:layout_width="350dp"
@@ -113,17 +111,16 @@
     </RelativeLayout>
 
 
-
-    <com.incite.moviequiz.FButton
-        android:onClick="checkAnswer"
+    <com.incite.moviequiz.presentation.custom_view.FButton
         android:id="@+id/trueButton"
-        android:layout_below="@id/rl1"
         android:layout_width="140dp"
         android:layout_height="70dp"
-        android:layout_marginTop="15dp"
+        android:layout_below="@id/rl1"
         android:layout_marginStart="45dp"
+        android:layout_marginTop="15dp"
         android:layout_marginBottom="25dp"
         android:fontFamily="@font/rounds"
+        android:onClick="checkAnswer"
         android:text="Правда"
         android:textSize="18sp"
         fbutton:cornerRadius="20dp"
@@ -132,18 +129,18 @@
         fbutton:shadowEnabled="true"
         fbutton:shadowHeight="7dp" />
 
-    <com.incite.moviequiz.FButton
-        android:onClick="checkAnswer"
+    <com.incite.moviequiz.presentation.custom_view.FButton
         android:id="@+id/falseButton"
-        android:layout_below="@id/rl1"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="25dp"
         android:layout_width="140dp"
         android:layout_height="70dp"
+        android:layout_below="@id/rl1"
+        android:layout_alignParentEnd="true"
         android:layout_gravity="end"
+        android:layout_marginTop="15dp"
         android:layout_marginEnd="45dp"
+        android:layout_marginBottom="25dp"
         android:fontFamily="@font/rounds"
+        android:onClick="checkAnswer"
         android:text="Ложь"
         android:textSize="18sp"
         fbutton:cornerRadius="20dp"

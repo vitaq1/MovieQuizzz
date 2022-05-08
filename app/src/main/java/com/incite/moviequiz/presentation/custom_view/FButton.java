@@ -1,4 +1,4 @@
-package com.incite.moviequiz;
+package com.incite.moviequiz.presentation.custom_view;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -17,26 +17,23 @@ import android.widget.Button;
 
 import info.hoang8f.fbutton.R;
 
-/**
- * Created by hoang8f on 5/5/14.
- */
 
 public class FButton extends Button implements View.OnTouchListener {
 
     //Custom values
     private boolean isShadowEnabled = true;
-    private int mButtonColor;
-    private int mShadowColor;
-    int mShadowHeight;
+    public int mButtonColor;
+    public int mShadowColor;
+    public int mShadowHeight;
     private int mCornerRadius;
     //Native values
-    int mPaddingLeft;
-    int mPaddingRight;
-    int mPaddingTop;
-    int mPaddingBottom;
+    public int mPaddingLeft;
+    public int mPaddingRight;
+    public int mPaddingTop;
+    public int mPaddingBottom;
     //Background drawable
-    Drawable pressedDrawable;
-    Drawable unpressedDrawable;
+    public Drawable pressedDrawable;
+    public Drawable unpressedDrawable;
 
     boolean isShadowColorDefined = false;
 
@@ -181,7 +178,7 @@ public class FButton extends Button implements View.OnTouchListener {
         this.setPadding(mPaddingLeft, mPaddingTop + mShadowHeight, mPaddingRight, mPaddingBottom + mShadowHeight);
     }
 
-    void updateBackground(Drawable background) {
+    public void updateBackground(Drawable background) {
         if (background == null) return;
         //Set button background
         if (Build.VERSION.SDK_INT >= 16) {
@@ -262,7 +259,6 @@ public class FButton extends Button implements View.OnTouchListener {
         refresh();
     }
 
-    //Getter
     public boolean isShadowEnabled() {
         return isShadowEnabled;
     }
